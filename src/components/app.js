@@ -1,40 +1,40 @@
 import React from 'react';
-// import SearchBar from './searchBar';
+import SearchBar from './searchBar';
 import MovieList from './MovieList';
 
 class App extends React.Component{
 
     state= {
 
-        movies: [
-            {
-                'id':1,
-                'name':'the flash',
-                'rating':8.3,
-                'overview':'vefhıbeqıupvhnerğuvnherıv',
-                'imageURL':'https://cdn.pixabay.com/photo/2021/10/17/15/58/police-6718716_960_720.jpg'
-            },
-        
-            { 'id':2,
-            'name':'the flash',
-            'rating':9.1,
-            'overview':'vefhıbeqıupvhnerğuvnherıv',
-            'imageURL':'https://cdn.pixabay.com/photo/2017/07/26/06/31/road-2540632_960_720.jpg'},
-        
-            { 'id':3,
-            'name':'the flash',
-            'rating':9.5,
-            'overview':'vefhıbeqıupvhnerğuvnherıv',
-            'imageURL':'https://cdn.pixabay.com/photo/2016/02/24/11/56/human-1219639_960_720.jpg'}
-        ]
+        movies: [],
+
+        searchValue: ''
+    }
+
+    async componentDidMount(){
+        const baseURL= 'http://localhost:3002/movies';
+        const response= await fetch(baseURL);
+        const data= await response.json();
+        this.setState({movies:data});
+      
+
     }
 
     deleteMovie= (movie)=>{
         const newMovieList= this.state.movies.filter(m => m.id!== movie.id );
 
-        this.setState({
-            movies: newMovieList,
+
+        this.setState(state=>({
+            movies:newMovieList
         })
+        )
+
+        console.log(this.state);
+    }
+
+    searchMovie= (e)=>{
+        // console.log(e.target.value);
+        this.setState({searchValue:e.target.value})
     }
        
     
@@ -42,15 +42,22 @@ class App extends React.Component{
 
 
     render(){
+
+        let filteredMovies= this.state.movies.filter( 
+            (movie)=> {
+                return movie.name.toLowerCase().indexOf(this.state.searchValue.toLowerCase()) !== -1
+            }   )
         return(
 
             <div className='container'>
                 <div className='row'>
                     <div className='col-lg-12'>
+                        <SearchBar searchMovieProp={this.searchMovie}/>
+                        <br/>
                      
                     </div>
                 </div>
-                <MovieList  movies= {this.state.movies}
+                <MovieList  movies= {filteredMovies}
                 deleteMovieProp={this.deleteMovie}
                 />
         
